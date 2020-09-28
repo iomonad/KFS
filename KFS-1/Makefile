@@ -40,6 +40,8 @@ iso: rom
 
 clean:
 	rm -fr $(BUILD_DIR) isodir
+fclean: clean
+	rm -f $(TARGET)
 
 .PHONY: prepare bootloader kernel rom
 .DEFAULT_GOAL := rom
