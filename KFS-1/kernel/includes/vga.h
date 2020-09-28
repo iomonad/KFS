@@ -4,6 +4,11 @@
 #ifndef VGA_H
 #define VGA_H
 
+#include <types.h>
+
+#define VGA_ADDRESS 0xB8000
+#define VGA_BUFFER_SIZE 3200
+
 enum vga_color {
 	BLACK = 0x0,
 	BLUE,
@@ -23,6 +28,7 @@ enum vga_color {
 	WHITE,
 };
 
-#define VGA_ADDRESS 0xB8000
+/* TODO DOCS */
+uint16_t *vga_buffer;
 
 #endif	/* VGA_H */
