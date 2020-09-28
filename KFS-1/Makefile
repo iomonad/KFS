@@ -12,4 +12,3 @@ prepare:
 
 bootloader: prepare
 	$(ASM) $(ASM_FLAGS)  $(ASM_SRC) -o $(BOOTLOADER_TARGET)
-
