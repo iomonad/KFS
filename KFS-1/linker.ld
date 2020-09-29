@@ -1,5 +1,5 @@
 /* entry point of our kernel */
-ENTRY(_start)
+ENTRY(kfs_entry)
 
 SECTIONS
 {

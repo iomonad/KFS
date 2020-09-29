@@ -1,8 +1,8 @@
 TARGET = kfs.rom
 
-ASM = as
-ASM_FLAGS = --32 -o boot.
-ASM_SRC = boot/boot.S
+ASM = nasm
+ASM_FLAGS = -f elf32
+ASM_SRC = boot/boot.asm
 BOOTLOADER_TARGET = build/boot.o
 
 CC = gcc
