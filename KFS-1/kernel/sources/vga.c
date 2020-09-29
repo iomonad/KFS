@@ -83,6 +83,9 @@ void vga_swrite(const char *buff, uint32_t nbytes,
 		if (buff[i] == 0x0A) {
 			vga_endl();
 			continue ;
+		} else if (buff[i] == 0x09) {
+			vga_buffer_cursor += 0x08;
+			continue ;
 		}
 		vga_buffer[vga_buffer_cursor] = vga_cook_char(buff[i], fg, bg);
 		vga_buffer_cursor++;
