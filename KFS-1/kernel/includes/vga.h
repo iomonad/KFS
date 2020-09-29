@@ -46,6 +46,11 @@ extern uint16_t *vga_buffer;
 /* INTERNAL FUNCTIONS */
 
 void vga_clear_screen(void);
-void vga_puts(const char *str);
+void vga_swrite(const char *buff, uint32_t nbytes,
+		uint8_t fg, uint8_t bg);
+void vga_putcchar(const char c, uint8_t fg, uint8_t bg);
+void vga_putchar(const char c);
+void vga_puts(const char *buff);
+void vga_endl(void);
 
 #endif	/* VGA_H */

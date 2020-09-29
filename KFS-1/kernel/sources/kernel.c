@@ -11,10 +11,12 @@
 
 /* Initialize video buffer */
 uint16_t *vga_buffer = (uint16_t*)VGA_ADDRESS;
+uint16_t vga_buffer_cursor = 0x00;
+uint16_t vga_buffer_line_pos = 0x01;
 
 void __kmain()
 {
 	vga_clear_screen();
-	vga_puts("Sarah je pense a toi !!!! <3");
+	vga_puts("SARAH\nJE\nt'aime\nTEST DE CHAR\nOK");
 	return ;
 }
