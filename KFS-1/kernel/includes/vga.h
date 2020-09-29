@@ -11,6 +11,10 @@
 
 #include <types.h>
 
+/*
+ * See: https://en.wikipedia.org/wiki/VGA_text_mode
+ */
+
 #define VGA_ADDRESS 0xB8000
 #define VGA_BUFFER_SIZE 3200
 
@@ -33,7 +37,12 @@ enum vga_color {
 	WHITE,
 };
 
-/* TODO DOCS */
-uint16_t *vga_buffer;
+#define VGA_DEFAULT_BACKGROUND BLACK
+#define VGA_DEFAULT_FOREGROUND WHITE
+
+/* Video Buffer */
+extern uint16_t *vga_buffer;
+
+/* INTERNAL FUNCTIONS */
 
 #endif	/* VGA_H */

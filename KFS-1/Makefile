@@ -1,24 +1,16 @@
+#
+# (c) 2020 iomonad <iomonad@riseup.net>
+#
+
+include rules/environment.mk
+include rules/assembly.mk
+include rules/compiler.mk
+include rules/linker.mk
+
 TARGET = kfs.rom
+TARGET_ISO = kfs.iso
 
-ASM = nasm
-ASM_FLAGS = -f elf32
-ASM_SRC = boot/boot.asm
-BOOTLOADER_TARGET = build/boot.o
-
-CC = gcc
-CFLAGS = -m32 -std=gnu99 \
-	 -fno-builtin -fno-exceptions \
-	 -fno-stack-protector \
-	 -nostdlib -nodefaultlibs \
-	 -O2 -Wall -Wextra -c $(LIBS_FLAGS)
-LIBS_FLAGS = -Ikernel/includes
-KERNEL_SOURCES = kernel/sources/kernel.c
-KERNEL_TARGET = build/kernel.o
-
-LINKER = ld
-LFLAGS = -m elf_i386 -T linker.ld -nostdlib
-
-BUILD_DIR = build/
+# ==== BEGIN RULES ====
 
 prepare:
 	mkdir -p $(BUILD_DIR)
@@ -26,22 +18,27 @@ prepare:
 bootloader: prepare
 	$(ASM) $(ASM_FLAGS)  $(ASM_SRC) -o $(BOOTLOADER_TARGET)
 
-kernel: prepare
-	$(CC) $(CFLAGS) $(KERNEL_SOURCES) -o $(KERNEL_TARGET)
+kernel: $(KERNEL_TARGETS)
+
+kernel/sources/%.o: $(KERNEL_SOURCES)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 rom: bootloader kernel
 	$(LINKER) $(LFLAGS) $(BOOTLOADER_TARGET) $(KERNEL_TARGET) -o $(TARGET)
 
 iso: rom
-	mkdir -p isodir/boot/grub
-	cp $(TARGET) isodir/boot/$(TARGET)
-	cp boot/grub.cfg isodir/boot/grub/grub.cfg
-	grub-mkrescue -o kfs.iso isodir
+	mkdir -p $(ISODIR_BOOT)
+	cp $(TARGET) $(ISODIR)/boot/$(TARGET)
+	cp boot/grub.cfg $(ISODIR_BOOT)/grub.cfg
+	grub-mkrescue -o $(TARGET_ISO) $(ISODIR)
 
 clean:
 	rm -fr $(BUILD_DIR) isodir
+
 fclean: clean
 	rm -f $(TARGET)
+
+# ==== END RULES =====
 
 .PHONY: prepare bootloader kernel rom
 .DEFAULT_GOAL := rom
