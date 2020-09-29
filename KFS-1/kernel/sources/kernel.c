@@ -9,10 +9,12 @@
 #include <vga.h>
 #include <kernel.h>
 
+/* Initialize video buffer */
+uint16_t *vga_buffer = (uint16_t*)VGA_ADDRESS;
+
 void __kmain()
 {
-	/* Initialize video buffer */
-	vga_buffer = (uint16_t*)VGA_ADDRESS;
-
+	vga_clear_screen();
+	vga_puts("Sarah je pense a toi !!!! <3");
 	return ;
 }

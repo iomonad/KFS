@@ -9,6 +9,8 @@
 #include <vga.h>
 #include <kernel.h>
 
+extern uint16_t *vga_buffer;
+
 /*
  * Helper function to correctly
  * apply colorset on the desired
@@ -16,10 +18,10 @@
  */
 static uint16_t vga_cook_char(unsigned char c,
 			      uint8_t foreground,
-			      uin8_t background)
+			      uint8_t background)
 {
-	uint16 ax;
-	uint8 ah, al;
+	uint16_t ax;
+	uint8_t ah, al;
 
 	/*
 	*  16 bit video buffer elements(register ax)
@@ -37,7 +39,7 @@ static uint16_t vga_cook_char(unsigned char c,
 	ah |= foreground;
 	ax = ah;
 	ax <<= 8;
-	al = ch;
+	al = c;
 	ax |= al;
 	return ax;
 }
@@ -47,7 +49,18 @@ static uint16_t vga_cook_char(unsigned char c,
  */
 void vga_clear_screen(void)
 {
-	for (uint32_ i = 0; i < VGA_BUFFER_SIVE; ++i) {
-		vga_buffer[i] = vga_cook_char(NULL, VGA_DEFAULT_BG, VGA_DEFAULT_FG);
+	for (uint32_t i = 0; i < VGA_BUFFER_SIZE; ++i) {
+		vga_buffer[i] = vga_cook_char(NULL, VGA_DEFAULT_FG, VGA_DEFAULT_BG);
+	}
+}
+
+/*
+ * Puts string on VGA
+ */
+
+void vga_puts(const char *str)
+{
+	for (int i = 0; str[i] != '\0'; i++) {
+		vga_buffer[i] = vga_cook_char(str[i], VGA_DEFAULT_FG, VGA_DEFAULT_BG);
 	}
 }

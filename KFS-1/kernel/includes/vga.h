@@ -37,12 +37,15 @@ enum vga_color {
 	WHITE,
 };
 
-#define VGA_DEFAULT_BACKGROUND BLACK
-#define VGA_DEFAULT_FOREGROUND WHITE
+#define VGA_DEFAULT_BG BLACK
+#define VGA_DEFAULT_FG WHITE
 
 /* Video Buffer */
 extern uint16_t *vga_buffer;
 
 /* INTERNAL FUNCTIONS */
+
+void vga_clear_screen(void);
+void vga_puts(const char *str);
 
 #endif	/* VGA_H */

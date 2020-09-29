@@ -9,8 +9,7 @@
 #ifndef KERNEL_H
 #define KERNEL_H
 
-#include "vga.h"
-#include "types.h"
+#include <types.h>
 
 /* SYSTEM CONSTANTS */
 

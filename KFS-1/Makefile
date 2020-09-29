@@ -20,11 +20,11 @@ bootloader: prepare
 
 kernel: $(KERNEL_TARGETS)
 
-kernel/sources/%.o: $(KERNEL_SOURCES)/%.c
+$(KERNEL_SRC_DIR)/%.o: $(KERNEL_SOURCES)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 rom: bootloader kernel
-	$(LINKER) $(LFLAGS) $(BOOTLOADER_TARGET) $(KERNEL_TARGET) -o $(TARGET)
+	$(LINKER) $(LFLAGS) $(BOOTLOADER_TARGET) $(KERNEL_TARGETS) -o $(TARGET)
 
 iso: rom
 	mkdir -p $(ISODIR_BOOT)
@@ -34,6 +34,7 @@ iso: rom
 
 clean:
 	rm -fr $(BUILD_DIR) isodir
+	rm -f $(KERNEL_TARGETS)
 
 fclean: clean
 	rm -f $(TARGET)
