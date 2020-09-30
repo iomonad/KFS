@@ -9,3 +9,7 @@ Kernel From Scratch: From basic bootable kernel to advanced ELF memory parser &a
 - A basic kernel library, with basics functions and types
 - Some basic code to print some stuff on the screen
 - A basic "Hello world" kernel
+
+## KFS-2
+- GDT (Global Descriptor Table) Implementation
+ -> Creation / Fill / Linkage
