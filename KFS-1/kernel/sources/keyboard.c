@@ -50,7 +50,7 @@ __k_equivalence __ascii_key_table[] = {
 	{0x08, '7'},
 	{0x09, '8'},
 	{0x0A, '9'},
-	{0x0B, '0'}
+	{0x0B, '0'},
 };
 
 /*
@@ -107,14 +107,15 @@ char keytoascii(const char key)
 			return __ascii_key_table[i].eq;
 		}
 	}
-	return '-';
+	return 0x00;
 }
 
 
-void test_input(void) {
+void input_vga_showcase(void) {
 
 	char ch = 0;
 	char keycode = 0;
+
 	do {
 		keycode = kgetkey();
 		if(keycode == KEY_ENTER) {
@@ -125,8 +126,7 @@ void test_input(void) {
 			ch = keytoascii(keycode);
 			vga_putchar(ch);
 		}
-		ksleep(0x02FFFFFF);
-
-	} while(ch > 0);
+		ksleep(KERNEL_STD_DELAY);
+	} while(ch >= 0);
 
 }

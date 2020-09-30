@@ -20,6 +20,7 @@ void __kmain()
 {
 	vga_clear_screen();
 	vga_puts("42");
-	test_input();
+	vga_endl();
+	input_vga_showcase();
 	return ;
 }

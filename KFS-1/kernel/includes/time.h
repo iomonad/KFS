@@ -11,6 +11,8 @@
 
 #include <types.h>
 
+#define KERNEL_STD_DELAY 0x02FFFFFF
+
 void ksleep(uint32_t time);
 
 #endif	/* TIME_H */
