@@ -93,4 +93,21 @@
 
 /* END KEY LIST */
 
+/* BEGIN ASCII KEY TABLE */
+
+typedef struct key_equivalence {
+	char k; char eq;
+} __k_equivalence;
+
+extern __k_equivalence __ascii_key_table[];
+
+/* END ASCII KEY TABLE */
+
+#define KEYBOARD_PORT 0x60
+
+/* PROTOTYPES */
+
+char kgetkey(void);
+void test_input(void);
+
 #endif	/* KEYBOARD_H */

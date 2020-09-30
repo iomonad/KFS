@@ -26,7 +26,10 @@ $(KERNEL_SRC_DIR)/%.o: $(KERNEL_SOURCES)/%.c
 rom: bootloader kernel
 	$(LINKER) $(LFLAGS) $(BOOTLOADER_TARGET) $(KERNEL_TARGETS) -o $(TARGET)
 
-iso: rom
+post:
+	strip $(TARGET)
+
+iso: rom post
 	mkdir -p $(ISODIR_BOOT)
 	cp $(TARGET) $(ISODIR)/boot/$(TARGET)
 	cp boot/grub.cfg $(ISODIR_BOOT)/grub.cfg
@@ -37,9 +40,9 @@ clean:
 	rm -f $(KERNEL_TARGETS)
 
 fclean: clean
-	rm -f $(TARGET)
+	rm -f $(TARGET) *.iso
 
 # ==== END RULES =====
 
-.PHONY: prepare bootloader kernel rom
+.PHONY: prepare bootloader kernel rom post
 .DEFAULT_GOAL := rom

@@ -74,6 +74,21 @@ void vga_putchar(const char c) {
 
 
 /*
+ * Delete char on vga
+ */
+void vga_delchar(void) {
+	if (vga_buffer_cursor == 0) {
+		return ;
+	}
+	if ((vga_buffer_cursor - 1) % 80 == 0) {
+		vga_buffer_line_pos--;
+	}
+	vga_buffer_cursor--;
+	vga_buffer[vga_buffer_cursor] =
+		vga_cook_char(NULL, VGA_DEFAULT_FG, VGA_DEFAULT_BG);
+}
+
+/*
  * Secure VGA Write
  */
 void vga_swrite(const char *buff, uint32_t nbytes,

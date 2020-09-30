@@ -7,7 +7,9 @@
  *
  */
 #include <vga.h>
+#include <time.h>
 #include <kernel.h>
+#include <keyboard.h>
 
 /* Initialize video buffer */
 uint16_t *vga_buffer = (uint16_t*)VGA_ADDRESS;
@@ -18,5 +20,6 @@ void __kmain()
 {
 	vga_clear_screen();
 	vga_puts("42");
+	test_input();
 	return ;
 }

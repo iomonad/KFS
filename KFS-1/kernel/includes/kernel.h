@@ -17,4 +17,12 @@
 
 #define NULL 0
 
+/* OPTMISATIONS */
+#define likely(x)       __builtin_expect((x),1)
+#define unlikely(x)     __builtin_expect((x),0)
+
+/* ENTRYPOINT */
+
+void __kmain(void);
+
 #endif	/* KERNEL_H */
