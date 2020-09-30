@@ -43,7 +43,9 @@ clean:
 fclean: clean
 	rm -f $(TARGET) *.iso
 
+re: fclean rom
+
 # ==== END RULES =====
 
-.PHONY: prepare bootloader kernel rom post
+.PHONY: prepare bootloader kernel rom post clean fclean
 .DEFAULT_GOAL := rom
