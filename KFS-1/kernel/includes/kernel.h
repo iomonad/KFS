@@ -14,8 +14,15 @@
 /* SYSTEM CONSTANTS */
 
 #define PAGE_SIZE 4096
-
 #define NULL 0
+
+typedef enum {
+	QEMU,
+	VIRTUALBOX,
+	BARE_X86
+} __supported_platform;
+
+extern __supported_platform __running_platform;
 
 /* OPTMISATIONS */
 #define likely(x)       __builtin_expect((x),1)

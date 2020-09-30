@@ -1,3 +1,4 @@
+
 #
 # (c) 2020 iomonad <iomonad@riseup.net>
 #
@@ -33,7 +34,7 @@ iso: rom post
 	mkdir -p $(ISODIR_BOOT)
 	cp $(TARGET) $(ISODIR)/boot/$(TARGET)
 	cp boot/grub.cfg $(ISODIR_BOOT)/grub.cfg
-	grub-mkrescue -o $(TARGET_ISO) --compress=gz $(ISODIR)
+	grub-mkrescue -o $(TARGET_ISO) --compress=gz --themes="" --install-modules="multiboot" $(ISODIR)
 
 clean:
 	rm -fr $(BUILD_DIR) isodir
