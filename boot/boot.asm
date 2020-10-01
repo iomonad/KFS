@@ -35,5 +35,11 @@
   ;;  - https://c9x.me/x86/html/file_module_x86_id_31.html
   kfs_entry:
         cli                     ; Clear Interrupt Flag
+        mov esp, __stack
         call __kmain
         hlt                     ; Enter halt state
+
+  ;; Stack memory allocation
+  section .bss
+        resb 0x1f400            ; Reserve 1G Stack Memory
+        __stack:
