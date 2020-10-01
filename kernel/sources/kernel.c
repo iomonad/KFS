@@ -24,9 +24,5 @@ __supported_platform __running_platform = QEMU;
 void __kmain()
 {
 	vga_clear_screen();
-	vga_puts("42");
-	vga_endl();
-	vga_puts("System is going to halt !");
-	ksleep(4000000000);
 	return kshutdown();
 }

@@ -77,6 +77,23 @@ output_kb(uint16_t kb_port, uint8_t data)
 }
 
 /*
+ * Convert input key to ascii
+ * equivalent
+ */
+static char keytoascii(const char key)
+{
+	uint32_t tsize;
+
+	tsize = sizeof(__ascii_key_table) / sizeof(__ascii_key_table[0]);
+	for (uint32_t i = 0; i < tsize; i++) {
+		if (__ascii_key_table[i].k == key) {
+			return __ascii_key_table[i].eq;
+		}
+	}
+	return 0x00;
+}
+
+/*
  * Get key input frow keyport
  * hardware port
  */
@@ -94,39 +111,9 @@ _valid:
 }
 
 /*
- * Convert input key to ascii
- * equivalent
+ * Same implementation for `kgetkey` but
+ * return associated char for QWERTY Layout
  */
-char keytoascii(const char key)
-{
-	uint32_t tsize;
-
-	tsize = sizeof(__ascii_key_table) / sizeof(__ascii_key_table[0]);
-	for (uint32_t i = 0; i < tsize; i++) {
-		if (__ascii_key_table[i].k == key) {
-			return __ascii_key_table[i].eq;
-		}
-	}
-	return 0x00;
-}
-
-
-void input_vga_showcase(void) {
-
-	char ch = 0;
-	char keycode = 0;
-
-	do {
-		keycode = kgetkey();
-		if(keycode == KEY_ENTER) {
-			vga_endl();
-		} else if (keycode == KEY_BACKSPACE) {
-			vga_delchar();
-		} else {
-			ch = keytoascii(keycode);
-			vga_putchar(ch);
-		}
-		ksleep(KERNEL_STD_DELAY);
-	} while(ch >= 0);
-
+char kgetchar(void) {
+	return keytoascii(kgetkey());
 }

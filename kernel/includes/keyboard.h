@@ -108,6 +108,5 @@ extern __k_equivalence __ascii_key_table[];
 /* PROTOTYPES */
 
 char kgetkey(void);
-void input_vga_showcase(void);
 
 #endif	/* KEYBOARD_H */
