@@ -24,5 +24,9 @@ __supported_platform __running_platform = QEMU;
 void __kmain()
 {
 	vga_clear_screen();
+
+	for (;;) {
+		asm volatile ("nop");
+	}
 	return kshutdown();
 }
