@@ -47,10 +47,10 @@
   ;;     will raise a General Protection fault, an protection
   ;;     feature of the processor.
   global _gdt_commit
-  extern __gdt_ptr              ; GDT Pointer globally defined
+  extern _gdtptr                ; GDT Pointer globally defined
 
   _gdt_commit:
-        lgdt [__gdt_ptr]        ; Load GDT to our global ptr
+        lgdt [_gdtptr]          ; Load GDT to our global ptr
         mov ax, 0x10            ; Data segment offset from our GDT
         mov ds, ax
         mov es, ax

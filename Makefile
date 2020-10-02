@@ -27,7 +27,7 @@ kernel/sources/%.o: kernel/sources/%.c
 
 rom: bootloader kernel
 	printf "\nLD\t\t%s\n" $(TARGET)
-	$(LINKER) $(LFLAGS) $(KERNEL_TARGETS) $(ASM_TARGETS) -o $(TARGET)
+	$(LINKER) $(LFLAGS) $(ASM_TARGETS) $(KERNEL_TARGETS) -o $(TARGET)
 
 post:
 	strip $(TARGET)
