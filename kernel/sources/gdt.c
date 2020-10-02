@@ -44,9 +44,31 @@ void install_system_gdt(void)
 	_gdtptr.limit = (sizeof(struct _kgdt_entry) * GDT_SIZE) - 1;
 	_gdtptr.base = (uint32_t)&gdt;
 
-	/* Stick to standar guideline */
-	kgdt_add_entry(0, 0, 0, 0, 0);
+	/* Stick to standard guideline */
+	kgdt_add_entry(0x00, 0, 0, 0, 0);
+
+	/*
+	 * Code Segment:
+	 * -------------
+	 * Parameters:
+	 *   ->  Slot: 1
+	 *   ->  Base Address: 0
+	 *   ->  Segment Limit: 4GB
+	 *   ->  Access: 0x9A (for code)
+	 *   ->  Granularity: 4kb
+	 */
+	kgdt_add_entry(0x01, 0, 0xFFFFFFFF, 0x9A, 0xCF);
+
+	/*
+	 * Data Segment:
+	 * -------------
+	 *   ->  Slot: 1
+	 *   ->  Base Address: 0
+	 *   ->  Segment Limit: 4GB
+	 *   ->  Access: 0x92 (for data)
+	 *   ->  Granularity: 4kb
+	 */
+	kgdt_add_entry(0x02, 0, 0xFFFFFFFF, 0x92, 0xCF);
 
 	_gdt_commit();
-	return ;
 }
