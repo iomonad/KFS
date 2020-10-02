@@ -6,6 +6,7 @@
  * See: https://github.com/iomonad/KFS
  *
  */
+#include <gdt.h>
 #include <vga.h>
 #include <time.h>
 #include <kernel.h>
@@ -21,12 +22,25 @@ uint16_t vga_buffer_line_pos = 0x01;
 /* Need to auto determine in future */
 __supported_platform __running_platform = QEMU;
 
+static void __attribute__ ((cold))
+__kernel_init_hook(void)
+{
+	/* Setup VGA */
+	vga_clear_screen();
+
+	/*
+	 * Install GDT
+	 */
+	install_system_gdt();
+	vga_puts("GDT Installed!");
+}
+
 void __kmain()
 {
-	vga_clear_screen();
-	vga_puts("42");
-	vga_endl();
-	vga_puts("System is going to halt !");
-	ksleep(4000000000);
+	/* Prepare kernel datastructures */
+	__kernel_init_hook();
+	for (;;) {
+		asm volatile ("nop");
+	}
 	return kshutdown();
 }

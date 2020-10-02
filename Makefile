@@ -1,4 +1,3 @@
-
 #
 # (c) 2020 iomonad <iomonad@riseup.net>
 #
@@ -16,16 +15,19 @@ TARGET_ISO = kfs.iso
 prepare:
 	mkdir -p $(BUILD_DIR)
 
-bootloader: prepare
-	$(ASM) $(ASM_FLAGS)  $(ASM_SRC) -o $(BOOTLOADER_TARGET)
+bootloader: prepare $(ASM_TARGETS)
+boot/%.o: boot/%.asm
+	printf "ASM\t\t%s\n" $<
+	$(ASM) $(ASM_FLAGS) $< -o $@
 
 kernel: $(KERNEL_TARGETS)
-
-$(KERNEL_SRC_DIR)/%.o: $(KERNEL_SOURCES)/%.c
+kernel/sources/%.o: kernel/sources/%.c
+	printf "CC\t\t%s\n" $<
 	$(CC) $(CFLAGS) -c $< -o $@
 
 rom: bootloader kernel
-	$(LINKER) $(LFLAGS) $(BOOTLOADER_TARGET) $(KERNEL_TARGETS) -o $(TARGET)
+	printf "\nLD\t\t%s\n" $(TARGET)
+	$(LINKER) $(LFLAGS) $(ASM_TARGETS) $(KERNEL_TARGETS) -o $(TARGET)
 
 post:
 	strip $(TARGET)
@@ -38,7 +40,7 @@ iso: rom post
 
 clean:
 	rm -fr $(BUILD_DIR) isodir
-	rm -f $(KERNEL_TARGETS)
+	rm -fr $(KERNEL_TARGETS) $(ASM_TARGETS)
 
 fclean: clean
 	rm -f $(TARGET) *.iso
@@ -49,3 +51,4 @@ re: fclean rom
 
 .PHONY: prepare bootloader kernel rom post clean fclean
 .DEFAULT_GOAL := rom
+MAKEFLAGS += --silent --no-builtin-rules
