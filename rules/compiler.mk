@@ -18,6 +18,7 @@ KERNEL_SRC_FILES = kernel.c \
 	           stdlib.c \
 		   time.c \
 		   lifecycle.c \
-		   gdt.c
+		   gdt.c \
+		   memory.c
 KERNEL_SOURCES = $(addprefix $(KERNEL_SRC_DIR), $(KERNEL_SRC_FILES))
 KERNEL_TARGETS = $(KERNEL_SOURCES:.c=.o)
