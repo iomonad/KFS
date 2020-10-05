@@ -23,6 +23,7 @@ void interrupt_handler(registers_t reg)
 {
 	vga_puts("Kernel got interrupt: ");
 	vga_putnbr(reg.int_number);
+	vga_endl();
 }
 
 void idt_add_entry(uint8_t index, uint32_t base,

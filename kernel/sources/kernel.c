@@ -43,7 +43,6 @@ void __kmain()
 	/* Prepare kernel datastructures */
 	__kernel_init_hook();
 
-	asm volatile ("int $0xf");
 	for (;;) {
 		asm volatile ("nop");
 	}
