@@ -13,7 +13,14 @@
 #include <kernel.h>
 
 interrupt_entry_t idt_entries[IDT_SIZE];
+irqcb_t interrupt_callbacks[IDT_SIZE];
 idt_ptr_t idt_ptr;
+
+/* Register Callback */
+void register_interrupt_callback(uint8_t n, irqcb_t callback)
+{
+	interrupt_callbacks[n] = callback;
+}
 
 /*
  * Interrupt handler called
@@ -21,9 +28,20 @@ idt_ptr_t idt_ptr;
  */
 void interrupt_handler(registers_t reg)
 {
-	vga_puts("Kernel got interrupt: ");
-	vga_putnbr(reg.int_number);
-	vga_endl();
+	/*
+	 * TODO:
+	 *  - Handle EOI (end of interrupt) signal to the PICs.
+	 *  - Send reset signal to master
+	 */
+
+	if (interrupt_callbacks[reg.int_number] != 0) {
+		irqcb_t handler = interrupt_callbacks[reg.int_number];
+		handler(reg);
+	} else {
+		vga_puts("Warning! No handler for interrupt: ");
+		vga_putnbr(reg.int_number);
+		vga_endl();
+	}
 }
 
 void idt_add_entry(uint8_t index, uint32_t base,
@@ -69,6 +87,21 @@ install_system_idt(void)
 	idt_add_entry(14, (uint32_t)irq14, 0x08, 0x8E);
 	idt_add_entry(15, (uint32_t)irq15, 0x08, 0x8E);
 	idt_add_entry(16, (uint32_t)irq16, 0x08, 0x8E);
+	idt_add_entry(17, (uint32_t)irq16, 0x08, 0x8E);
+	idt_add_entry(18, (uint32_t)irq16, 0x08, 0x8E);
+	idt_add_entry(19, (uint32_t)irq16, 0x08, 0x8E);
+	idt_add_entry(20, (uint32_t)irq16, 0x08, 0x8E);
+	idt_add_entry(21, (uint32_t)irq16, 0x08, 0x8E);
+	idt_add_entry(22, (uint32_t)irq16, 0x08, 0x8E);
+	idt_add_entry(23, (uint32_t)irq16, 0x08, 0x8E);
+	idt_add_entry(24, (uint32_t)irq16, 0x08, 0x8E);
+	idt_add_entry(25, (uint32_t)irq16, 0x08, 0x8E);
+	idt_add_entry(26, (uint32_t)irq16, 0x08, 0x8E);
+	idt_add_entry(27, (uint32_t)irq16, 0x08, 0x8E);
+	idt_add_entry(28, (uint32_t)irq16, 0x08, 0x8E);
+	idt_add_entry(29, (uint32_t)irq16, 0x08, 0x8E);
+	idt_add_entry(30, (uint32_t)irq16, 0x08, 0x8E);
+	idt_add_entry(31, (uint32_t)irq16, 0x08, 0x8E);
 
 	_idt_commit((uint32_t)&idt_ptr);
 }
