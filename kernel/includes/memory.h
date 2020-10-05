@@ -9,4 +9,9 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
+/*
+ * See:
+ *   - http://www.jamesmolloy.co.uk/tutorial_html/6.-Paging.html
+ */
+
 #endif	/* MEMORY_H */
