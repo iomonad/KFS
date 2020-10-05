@@ -47,10 +47,6 @@ void idt_add_entry(uint8_t index, uint32_t base,
 void install_system_idt(void);
 void interrupt_handler(registers_t reg);
 
-extern void irq0(void);
-extern void irq1(void);
-extern void irq2(void);
-
 extern void _idt_commit(uint32_t);
 
 #endif	/* IRQ_H */
