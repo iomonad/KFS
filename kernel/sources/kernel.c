@@ -6,6 +6,7 @@
  * See: https://github.com/iomonad/KFS
  *
  */
+#include <irq.h>
 #include <gdt.h>
 #include <vga.h>
 #include <time.h>
@@ -28,11 +29,13 @@ __kernel_init_hook(void)
 	/* Setup VGA */
 	vga_clear_screen();
 
-	/*
-	 * Install GDT
-	 */
+	/* Install GDT */
 	install_system_gdt();
-	vga_puts("GDT Installed!");
+	vga_puts("GDT Installed!\n");
+
+	/* Install IDT */
+	install_system_idt();
+	vga_puts("IDT Installed!\n");
 }
 
 void __kmain()
