@@ -72,6 +72,22 @@ void vga_putchar(const char c) {
 	vga_putcchar(c, VGA_DEFAULT_FG, VGA_DEFAULT_BG);
 }
 
+/*
+ * Put interger value on vga
+ */
+void vga_putnbr(int n) {
+	if (n < 0) {
+		n = -n;
+	}
+	if (n >= 10) {
+		vga_putcchar(n / 10 + '0', VGA_DEFAULT_FG, VGA_DEFAULT_BG);
+		vga_putcchar(n % 10 + '0', VGA_DEFAULT_FG, VGA_DEFAULT_BG);
+	}
+	else {
+		vga_putcchar(n + '0', VGA_DEFAULT_FG, VGA_DEFAULT_BG);
+	}
+}
+
 
 /*
  * Delete char on vga

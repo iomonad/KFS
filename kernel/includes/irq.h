@@ -11,6 +11,8 @@
 
 #include <types.h>
 
+# define IDT_SIZE 256
+
 /*
  * Modelize an IDT Entry
  */
@@ -47,9 +49,25 @@ void idt_add_entry(uint8_t index, uint32_t base,
 void install_system_idt(void);
 void interrupt_handler(registers_t reg);
 
+#define IRQ_IMPL_COUNT 16
+
 extern void irq0(void);
 extern void irq1(void);
 extern void irq2(void);
+extern void irq3(void);
+extern void irq4(void);
+extern void irq5(void);
+extern void irq6(void);
+extern void irq7(void);
+extern void irq8(void);
+extern void irq9(void);
+extern void irq10(void);
+extern void irq11(void);
+extern void irq12(void);
+extern void irq13(void);
+extern void irq14(void);
+extern void irq15(void);
+extern void irq16(void);
 
 extern void _idt_commit(uint32_t);
 

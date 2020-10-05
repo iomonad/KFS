@@ -41,6 +41,10 @@ iso: rom post
 clean:
 	rm -fr $(BUILD_DIR) isodir
 	rm -fr $(KERNEL_TARGETS) $(ASM_TARGETS)
+	printf "\nRM\t\t%s" $(BUILD_DIR)
+	printf "\nRM\t\t%s" $(KERNEL_TARGETS)
+	printf "\nRM\t\t%s" $(ASM_TARGETS)
+	echo
 
 fclean: clean
 	rm -f $(TARGET) *.iso
