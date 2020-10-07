@@ -10,6 +10,7 @@
 #include <gdt.h>
 #include <vga.h>
 #include <time.h>
+#include <memory.h>
 #include <kernel.h>
 #include <keyboard.h>
 #include <lifecycle.h>
@@ -36,6 +37,9 @@ __kernel_init_hook(void)
 	/* Install IDT */
 	install_system_idt();
 	vga_puts("IDT Installed!\n");
+
+	/* Initialize memory pagging */
+	install_system_memory();
 }
 
 void __kmain()
@@ -43,9 +47,8 @@ void __kmain()
 	/* Prepare kernel datastructures */
 	__kernel_init_hook();
 
-	asm volatile ("int $0x5");
 	for (;;) {
 		asm volatile ("nop");
 	}
-	return kshutdown();
+        return kshutdown();
 }

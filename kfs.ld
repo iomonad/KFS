@@ -27,4 +27,7 @@ SECTIONS
        *(COMMON)
        *(.bss)
     }
+
+    /* Start of physical memory */
+    physmemstart = .; _physmemstart = .; __physmemstart = .;
 }
