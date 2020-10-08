@@ -149,3 +149,33 @@ void vga_endl(void)
 	vga_buffer_cursor = 80 * vga_buffer_line_pos;
 	vga_buffer_line_pos += 1;
 }
+
+
+/* Put hex address on screen  */
+void vga_puthex(uint32_t addr) {
+	int tmp;
+	char q = 1;
+
+	vga_puts("0x");
+	for (int i = 28; i > 0; i -= 4) {
+		tmp = (addr >> i) & 0xF;
+		if (tmp == 0 && q != 0) {
+			continue;
+		}
+		if (tmp >= 0xA) {
+		        q = 0;
+			vga_putchar(tmp - 0xA + 'a');
+		}
+		else {
+			q = 0;
+			vga_putchar(tmp + '0');
+		}
+	}
+	tmp = addr & 0xF;
+	if (tmp >= 0xA) {
+		vga_putchar(tmp - 0xA + 'a');
+	}
+	else {
+		vga_putchar(tmp + '0');
+	}
+}

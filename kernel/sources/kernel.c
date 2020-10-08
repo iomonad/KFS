@@ -39,7 +39,7 @@ __kernel_init_hook(void)
 	vga_puts("IDT Installed!\n");
 
 	/* Initialize memory pagging */
-//	install_system_memory();
+	install_system_memory();
 }
 
 void __kmain()
@@ -47,8 +47,7 @@ void __kmain()
 	/* Prepare kernel datastructures */
 	__kernel_init_hook();
 
-	uint32_t *ptr = (uint32_t*)0xA0000000;
-	*ptr += 2;
+	asm volatile ("int $0xe");
 	for (;;) {
 		asm volatile ("nop");
 	}

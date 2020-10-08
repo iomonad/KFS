@@ -8,6 +8,7 @@
  */
 #include <vga.h>
 #include <irq.h>
+#include <time.h>
 #include <memory.h>
 #include <stdlib.h>
 #include <kernel.h>
@@ -184,14 +185,6 @@ static void initialize_pagging(page_directory_t *dir)
 	asm volatile("mov %0, %%cr0":: "r"(cr0_reg));
 }
 
-/* Page fault interrupt callback */
-static void page_fault_int(registers_t r)
-{
-	(void)r;
-	/* TODO: Need debug address print */
-	kpanic("Page Fault");
-}
-
 /*  */
 static page_t *retrieve_page(uint32_t addr, int craft,
 			     page_directory_t *dir)
@@ -225,6 +218,36 @@ static page_t *retrieve_page(uint32_t addr, int craft,
 	return NULL;
 }
 
+/* Page fault interrupt callback */
+static void page_fault_int(registers_t regs)
+{
+	uint32_t fault_addr = NULL;
+
+	/* Fault addr are in CR2 Register */
+	asm volatile("mov %%cr2, %0" : "=r" (fault_addr));
+
+	vga_puts("Page fault !! Trace infos: (");
+	if (!(regs.err_code & 0x1)) {
+		vga_puts("PRESENT ");
+	}
+	if (regs.err_code & 0x2) {
+		vga_puts("RONLY ");
+	}
+	if (regs.err_code & 0x4) {
+		vga_puts("USER_MODE ");
+	}
+	if (regs.err_code & 0x8) {
+		vga_puts("RESERVED");
+	}
+	if (regs.err_code & 0x10) {
+		vga_puts("IFETCH");
+	}
+	vga_puts(") at ");
+	vga_puthex(fault_addr);
+	vga_endl();
+	kpanic("Page Fault");
+}
+
 void __attribute__ ((cold))
 install_system_memory(void)
 {
@@ -244,6 +267,8 @@ install_system_memory(void)
 	/* The head of directory */
 	curr_dir_page = kernel_dir_page;
 
+	vga_puthex(*frameptr);
+	ksleep(0xFFFFFFFF);
 	/*
 	 * Allocate frames
 	 */
