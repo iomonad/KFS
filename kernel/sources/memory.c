@@ -9,6 +9,7 @@
 #include <vga.h>
 #include <irq.h>
 #include <memory.h>
+#include <stdlib.h>
 #include <kernel.h>
 #include <lifecycle.h>
 
@@ -21,6 +22,9 @@ kheap_t served_address = (uint32_t)&physmemstart;
 /* Cursor & Kernel directory pages */
 page_directory_t *curr_dir_page = NULL;
 page_directory_t *kernel_dir_page = NULL;
+
+uint32_t frame_count;
+uint32_t *frameptr = NULL;
 
 /*
  * Kernel memory implementation management, with allignement
@@ -62,8 +66,112 @@ uint32_t kpmalloc(const uint32_t size, uint32_t *phyref)
 	return __kmalloc_impl(size, 1, phyref);
 }
 
-/* Bitset algorithms implementation */
+/* Frame Algorithm */
 
+/*
+ * Set a bit in frame Bitset
+ */
+void bf_set(uint32_t faddr)
+{
+	uint32_t frame = faddr / 0x1000;
+
+	uint32_t idx = INDEX_FROM_BIT(frame);
+
+	uint32_t off = OFFSET_FROM_BIT(frame);
+
+	frameptr[idx] |= (0x1 << off);
+}
+
+/*
+ * Clear bit in frame Bitset
+ */
+void bf_clear(uint32_t faddr)
+{
+	uint32_t frame = faddr / 0x1000;
+
+	uint32_t idx = INDEX_FROM_BIT(frame);
+
+	uint32_t off = OFFSET_FROM_BIT(frame);
+
+	frameptr[idx] &= ~(0x1 << off);
+}
+
+/*
+ * Test if bit is set in Frame Bitset
+ */
+uint32_t bf_assert(uint32_t faddr)
+{
+	uint32_t frame = faddr / 0x1000;
+
+	uint32_t idx = INDEX_FROM_BIT(frame);
+
+	uint32_t off = OFFSET_FROM_BIT(frame);
+
+	return (frameptr[idx] & (0x1 << off));
+}
+
+/*
+ * Find the first free frame
+ */
+uint32_t bf_first_frame(void)
+{
+	for (uint32_t i = 0; i < INDEX_FROM_BIT(frame_count); i++) {
+		/*
+		 * If memory not free, skip
+		 */
+		if (frameptr[i] != 0xFFFFFFFF) {
+			for (uint32_t j = 0; j < 32; j++) {
+				uint32_t assert = 0x1 << j;
+
+				if ((frameptr[i] & assert) != NULL) {
+					return (i * 4 * 8) + j;
+				}
+			}
+		}
+	}
+	return NULL;
+}
+
+void bf_alloc_frame(page_t *page, int is_kspace,
+			   int is_writeable)
+{
+	if (page->frame != NULL) {
+		/*
+		 * Frame already allocated, exit.
+		 * Maybe add debug w/ dmesg implementation in the
+		 * future ?
+		 */
+		return ;
+	}
+
+	uint32_t idx = bf_first_frame();
+	if (idx == 0xFFFFFFFF) {
+		kpanic("No free frames availables !!");
+	}
+
+	/* Place ownership on frame */
+	bf_set(idx * 0x1000);
+
+	page->present = 1;
+	page->rw = is_writeable;
+	page->user = is_kspace;
+	page->frame = idx;
+}
+
+void bf_dealloc_frame(page_t *page)
+{
+	uint32_t frame;
+
+	if ((frame = page->frame) == NULL) {
+		/*
+		 * No associated page to free !
+		 * Maybe log it to DMESG ?
+		 */
+		return ;
+	}
+	bf_clear(frame);
+	page->frame = 0x0;
+}
 
 static void initialize_pagging(page_directory_t *dir)
 {
@@ -84,12 +192,65 @@ static void page_fault_int(registers_t r)
 	kpanic("Page Fault");
 }
 
+/*  */
+static page_t *retrieve_page(uint32_t addr, int craft,
+			     page_directory_t *dir)
+{
+	uint32_t tidx;		/* Our memory table index */
+
+	/* Convert Addr to Index */
+	addr /= 0x1000;
+	tidx = addr / 0x400;
+
+	if (dir->table[tidx] != NULL) {
+		/*
+		 * At thi point we know that the table is already
+		 * assigned so simply return his reference.
+		 */
+		return &dir->table[tidx]->pages[addr % 0x400];
+	}
+	if (craft != 0) {
+		/*
+		 * In the case of the page is asked, not existing
+		 * and user supplied the `craft` flag, we will alloc
+		 * allignated & physical memory page table
+		 */
+		uint32_t physical_table;
+
+		dir->table[tidx] = (page_table_t*)__kmalloc_impl(sizeof(page_table_t), 1, &physical_table);
+		memset(dir->table[tidx], 0x0, 0x1000);
+		dir->physical_table[tidx] = physical_table | 0x7; // (PRESENT | RW | US)
+		return &dir->table[tidx]->pages[addr % 0x400];
+	}
+	return NULL;
+}
+
 void __attribute__ ((cold))
 install_system_memory(void)
 {
 	/* Physical memory Size */
-	//uint32_t memory_end_page = 0x1000000;
+	uint32_t memory_end_page = 0x1000000;
 
+	frame_count = memory_end_page / 0x1000;
+
+	/* Initialise Frame Pointer */
+	frameptr = (uint32_t*)kmalloc(INDEX_FROM_BIT(frame_count));
+	memset(frameptr, 0x0, INDEX_FROM_BIT(frame_count));
+
+	/* Initialise Kernel Page Directory */
+	kernel_dir_page = (page_directory_t*)__kmalloc_impl(sizeof(page_directory_t), 1, NULL);
+	memset(kernel_dir_page, 0x0, sizeof(page_directory_t));
+
+	/* The head of directory */
+	curr_dir_page = kernel_dir_page;
+
+	/*
+	 * Allocate frames
+	 */
+	for (kheap_t i = 0; i < served_address; i += 0x1000) {
+		/* TODO: Handle Userspace memory allocation */
+		bf_alloc_frame(retrieve_page(i, 1, kernel_dir_page), 0, 0);
+	}
 	register_interrupt_callback(14, page_fault_int);
-	return initialize_pagging(kernel_dir_page); /*  */
+	return initialize_pagging(kernel_dir_page);
 }

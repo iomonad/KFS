@@ -72,7 +72,23 @@ typedef uint32_t kheap_t;
 
 void __attribute__ ((cold)) install_system_memory(void);
 
+/* Bitset Frame */
+void bf_set(uint32_t faddr);
+void bf_clear(uint32_t faddr);
+void bf_alloc_frame(page_t *page, int is_kspace,
+		    int is_writeable);
+void bf_dealloc_frame(page_t *page);
+uint32_t bf_assert(uint32_t faddr);
+uint32_t bf_first_frame(void);
+
+/* High Level Wrappers */
 uint32_t kmalloc(const uint32_t size);
 uint32_t kpmalloc(const uint32_t size, uint32_t *phyref);
+
+/*
+ * Macros used in the bitset algorithms.
+ */
+#define INDEX_FROM_BIT(a) (a / (8 * 4))
+#define OFFSET_FROM_BIT(a) (a % (8 * 4))
 
 #endif	/* MEMORY_H */

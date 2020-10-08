@@ -8,6 +8,7 @@ include rules/compiler.mk
 include rules/linker.mk
 
 TARGET = kfs.rom
+TARGET_SYM = kfs.sym
 TARGET_ISO = kfs.iso
 
 # ==== BEGIN RULES ====
@@ -28,6 +29,7 @@ kernel/sources/%.o: kernel/sources/%.c
 rom: bootloader kernel
 	printf "\nLD\t\t%s\n" $(TARGET)
 	$(LINKER) $(LFLAGS) $(ASM_TARGETS) $(KERNEL_TARGETS) -o $(TARGET)
+	cp $(TARGET) $(TARGET).cpy && objcopy --only-keep-debug $(TARGET).cpy $(TARGET_SYM) && rm $(TARGET).cpy
 
 post:
 	strip $(TARGET)
@@ -40,11 +42,7 @@ iso: rom post
 
 clean:
 	rm -fr $(BUILD_DIR) isodir
-	rm -fr $(KERNEL_TARGETS) $(ASM_TARGETS)
-	printf "\nRM\t\t%s" $(BUILD_DIR)
-	printf "\nRM\t\t%s" $(KERNEL_TARGETS)
-	printf "\nRM\t\t%s" $(ASM_TARGETS)
-	echo
+	rm -fr $(KERNEL_TARGETS) $(ASM_TARGETS) $(TARGET_SYM)
 
 fclean: clean
 	rm -f $(TARGET) *.iso
