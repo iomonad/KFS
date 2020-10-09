@@ -40,6 +40,7 @@ __kernel_init_hook(void)
 
 	/* Initialize memory pagging */
 	install_system_memory();
+	vga_puts("Memory Paging Installed!\n");
 }
 
 void __kmain()
@@ -47,7 +48,12 @@ void __kmain()
 	/* Prepare kernel datastructures */
 	__kernel_init_hook();
 
-	asm volatile ("int $0xe");
+	uint32_t *ptr = (uint32_t*)0xA0000000;
+	uint32_t do_page_fault = *ptr;
+
+	do_page_fault++;
+	ptr++;
+
 	for (;;) {
 		asm volatile ("nop");
 	}

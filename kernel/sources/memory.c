@@ -179,13 +179,20 @@ static void initialize_pagging(page_directory_t *dir)
 	uint32_t cr0_reg;
 
 	curr_dir_page = dir;
+
 	asm volatile("mov %0, %%cr3":: "r"(&dir->physical_table));
+
+	/*
+	 * Note: setting the paging flag when the
+	 * protection flag is clear causes a
+	 * general-protection exception.
+	 */
 	asm volatile("mov %%cr0, %0": "=r"(cr0_reg));
-	cr0_reg |= 0x80000000; 	/* This enable paging according x86 */
+	cr0_reg |= 0x80000001;
+	cr0_reg = 0;
 	asm volatile("mov %0, %%cr0":: "r"(cr0_reg));
 }
 
-/*  */
 static page_t *retrieve_page(uint32_t addr, int craft,
 			     page_directory_t *dir)
 {
@@ -210,7 +217,12 @@ static page_t *retrieve_page(uint32_t addr, int craft,
 		 */
 		uint32_t physical_table;
 
-		dir->table[tidx] = (page_table_t*)__kmalloc_impl(sizeof(page_table_t), 1, &physical_table);
+		if ((dir->table[tidx] = (page_table_t*)__kmalloc_impl(sizeof(page_table_t), 1, &physical_table)) == NULL) {
+			kpanic("Failed allocating page table !!");
+		}
+		if (physical_table == NULL) {
+			kpanic("Physical Table Error !");
+		}
 		memset(dir->table[tidx], 0x0, 0x1000);
 		dir->physical_table[tidx] = physical_table | 0x7; // (PRESENT | RW | US)
 		return &dir->table[tidx]->pages[addr % 0x400];
@@ -257,18 +269,20 @@ install_system_memory(void)
 	frame_count = memory_end_page / 0x1000;
 
 	/* Initialise Frame Pointer */
-	frameptr = (uint32_t*)kmalloc(INDEX_FROM_BIT(frame_count));
+	if ((frameptr = (uint32_t*)kmalloc(INDEX_FROM_BIT(frame_count))) == NULL) {
+		kpanic("Unable to alloc Frame Pointer !");
+	}
 	memset(frameptr, 0x0, INDEX_FROM_BIT(frame_count));
 
 	/* Initialise Kernel Page Directory */
-	kernel_dir_page = (page_directory_t*)__kmalloc_impl(sizeof(page_directory_t), 1, NULL);
+	if ((kernel_dir_page = (page_directory_t*)__kmalloc_impl(sizeof(page_directory_t), 1, NULL)) == NULL) {
+		kpanic("Unable to alloc kernel directory page");
+	}
 	memset(kernel_dir_page, 0x0, sizeof(page_directory_t));
 
 	/* The head of directory */
 	curr_dir_page = kernel_dir_page;
 
-	vga_puthex(*frameptr);
-	ksleep(0xFFFFFFFF);
 	/*
 	 * Allocate frames
 	 */
