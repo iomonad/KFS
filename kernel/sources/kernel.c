@@ -48,7 +48,7 @@ void __kmain()
 	/* Prepare kernel datastructures */
 	__kernel_init_hook();
 
-	uint32_t *ptr = (uint32_t*)0xA0000000;
+ 	uint32_t *ptr = (uint32_t*)0xA0000000;
 	uint32_t do_page_fault = *ptr;
 
 	do_page_fault++;

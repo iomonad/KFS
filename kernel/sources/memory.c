@@ -180,6 +180,8 @@ static void initialize_pagging(page_directory_t *dir)
 
 	curr_dir_page = dir;
 
+	vga_puthex((uint32_t)&dir->physical_table); vga_endl();
+	vga_endl(); vga_endl();
 	asm volatile("mov %0, %%cr3":: "r"(&dir->physical_table));
 
 	/*
@@ -188,8 +190,8 @@ static void initialize_pagging(page_directory_t *dir)
 	 * general-protection exception.
 	 */
 	asm volatile("mov %%cr0, %0": "=r"(cr0_reg));
-	cr0_reg |= 0x80000001;
-	cr0_reg = 0;
+	cr0_reg |= 0x80000000;
+	/* cr0_reg |= (1 << 31); */
 	asm volatile("mov %0, %%cr0":: "r"(cr0_reg));
 }
 

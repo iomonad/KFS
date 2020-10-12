@@ -45,7 +45,7 @@ clean:
 	rm -fr $(KERNEL_TARGETS) $(ASM_TARGETS) $(TARGET_SYM)
 
 fclean: clean
-	rm -f $(TARGET) *.iso
+	rm -f $(TARGET) *.iso *.dump
 
 re: fclean rom
 

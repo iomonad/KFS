@@ -1,0 +1,13 @@
+romimage: file=/usr/share/bochs/BIOS-bochs-latest, address=0xe0000
+vgaromimage: file=/usr/share/bochs/VGABIOS-lgpl-latest
+
+megs: 32
+ata0-master: type=cdrom, path=kfs.iso, status=inserted
+boot: cdrom
+log: kfs.bochs.dump
+mouse: enabled=0
+panic: action=fatal
+error: action=report
+info: action=report
+clock: sync=realtime
+cpu: ips=1000000, reset_on_triple_fault=0, count=1
