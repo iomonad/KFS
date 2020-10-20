@@ -12,7 +12,7 @@
 #include <types.h>
 #include <kernel.h>
 
-#define GDT_SIZE 3
+#define GDT_SIZE 5
 
 /*
  * Modelize an GDT entry

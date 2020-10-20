@@ -1,7 +1,7 @@
-romimage: file=/usr/share/bochs/BIOS-bochs-latest, address=0xe0000
+romimage: file=/usr/share/bochs/BIOS-bochs-latest
 vgaromimage: file=/usr/share/bochs/VGABIOS-lgpl-latest
 
-megs: 32
+megs: 900
 ata0-master: type=cdrom, path=kfs.iso, status=inserted
 boot: cdrom
 log: kfs.bochs.dump
