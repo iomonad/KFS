@@ -42,5 +42,5 @@
   ;; Stack memory allocation
   section .bss
   __stack:
-        resb 0x4000            ; Reserve 16kb Stack Memory
+        resb 0x1000            ; Reserve 4kb Stack Memory
   __stack_end:

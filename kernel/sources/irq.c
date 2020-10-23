@@ -87,21 +87,6 @@ install_system_idt(void)
 	idt_add_entry(14, (uint32_t)irq14, 0x08, 0x8E);
 	idt_add_entry(15, (uint32_t)irq15, 0x08, 0x8E);
 	idt_add_entry(16, (uint32_t)irq16, 0x08, 0x8E);
-	idt_add_entry(17, (uint32_t)irq16, 0x08, 0x8E);
-	idt_add_entry(18, (uint32_t)irq16, 0x08, 0x8E);
-	idt_add_entry(19, (uint32_t)irq16, 0x08, 0x8E);
-	idt_add_entry(20, (uint32_t)irq16, 0x08, 0x8E);
-	idt_add_entry(21, (uint32_t)irq16, 0x08, 0x8E);
-	idt_add_entry(22, (uint32_t)irq16, 0x08, 0x8E);
-	idt_add_entry(23, (uint32_t)irq16, 0x08, 0x8E);
-	idt_add_entry(24, (uint32_t)irq16, 0x08, 0x8E);
-	idt_add_entry(25, (uint32_t)irq16, 0x08, 0x8E);
-	idt_add_entry(26, (uint32_t)irq16, 0x08, 0x8E);
-	idt_add_entry(27, (uint32_t)irq16, 0x08, 0x8E);
-	idt_add_entry(28, (uint32_t)irq16, 0x08, 0x8E);
-	idt_add_entry(29, (uint32_t)irq16, 0x08, 0x8E);
-	idt_add_entry(30, (uint32_t)irq16, 0x08, 0x8E);
-	idt_add_entry(31, (uint32_t)irq16, 0x08, 0x8E);
 
 	_idt_commit((uint32_t)&idt_ptr);
 }

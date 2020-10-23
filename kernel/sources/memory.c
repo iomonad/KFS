@@ -37,7 +37,7 @@ static uint32_t __kmalloc_impl(const uint32_t size, int alignement,
 	uint32_t ptr = served_address;
 
 	/* If not already alignated */
-	if (alignement == 1 && (served_address & 0xFFFFF000)) {
+	if (alignement == 1 && (served_address & 0x00000FFF)) {
 		served_address &= 0xFFFFF000;
 		served_address += 0x1000;
 	}
@@ -188,8 +188,7 @@ static void initialize_pagging(page_directory_t *dir)
 	 * general-protection exception.
 	 */
 	asm volatile("mov %%cr0, %0": "=r"(cr0_reg));
-	cr0_reg = 0x80000001;
-	//cr0_reg |= (1 << 31);
+//	cr0_reg = 0x80000001;
 	asm volatile("mov %0, %%cr0":: "r"(cr0_reg));
 }
 
