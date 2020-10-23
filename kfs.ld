@@ -1,33 +1,56 @@
 /* entry point of our kernel */
 ENTRY(kfs_entry)
 
+/* Setup kernel in hh memory */
+kmem_pos = 0xC0000000;
+
 SECTIONS
 {
-   /* we need 1MB of space atleast */
-   . = 1M;
+   . = 0x100000;
 
-   /* text section */
-   .text BLOCK(4K) : ALIGN(4K) {
-       *(.multiboot)
-       *(.text)
+   .multiboot ALIGN(4K) : {
+         *(.multiboot*)
    }
 
-   /* read only data section */
-   .rodata BLOCK(4K) : ALIGN(4K) {
-       *(.rodata)
-    }
+   .boottext ALIGN(4K) : {
+         *(.boottext*)
+   }
 
-    /* data section */
-    .data BLOCK(4K) : ALIGN(4K) {
-       *(.data)
-    }
+   . += kmem_pos;
+   kmem_start = .;
 
-    /* bss section */
-    .bss BLOCK(4K) : ALIGN(4K) {
-       *(COMMON)
-       *(.bss)
-    }
+   /* TEXT */
+   .text ALIGN(4K) : AT(ADDR(.text) - kmem_pos) {
+   	 kmem_text_start = .;
+	 *(.text*)
+	 . = ALIGN(4K);
+	 kmem_text_end = .;
+   }
 
-    /* Start of physical memory */
-    physmemstart = .; _physmemstart = .; __physmemstart = .;
+   /* RODATA */
+   .rodata ALIGN(4K) : AT(ADDR(.rodata) - kmem_pos) {
+  	  kmem_rodata_start = .;
+	  *(.rodata*)
+	  . = ALIGN(4K);
+	  kmem_rodata_end = .;
+   }
+
+   /* DATA */
+   .data ALIGN(4K) : AT(ADDR(.data) - kmem_pos) {
+   	 kmem_data_start = .;
+         *(.data*)
+	 . = ALIGN(4K);
+	kmem_data_end = .;
+   }
+
+   /* BSS */
+   .bss ALIGN(4K) : AT(ADDR(.bss) - kmem_pos) {
+   	kmem_bss_start = .;
+      	*(.bss)
+      	. = ALIGN(4K);
+      	kmem_bss_end = .;
+   }
+
+   /* Start of physical memory */
+   physmemstart = .; _physmemstart = .; __physmemstart = .;
 }

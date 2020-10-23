@@ -39,7 +39,7 @@ __kernel_init_hook(void)
 	vga_puts("IDT Installed!\n");
 
 	/* Initialize memory pagging */
-	install_system_memory();
+//	install_system_memory();
 	vga_puts("Memory Paging Installed!\n");
 }
 
