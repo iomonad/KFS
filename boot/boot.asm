@@ -11,6 +11,7 @@
 
   ;;-------------------
   ;; Lowmem endpoint
+  ;; See: https://wiki.osdev.org/Higher_Half_x86_Bare_Bones
   ;;-------------------
   section .boottext
   global kfs_entry
@@ -58,7 +59,10 @@
   _kfs_entry_highmem:
         mov esp, _stack_top
         call __kmain
-        hlt                     ; Enter halt state
+        cli
+        idle:
+           hlt                  ; Infinite loop if the system has nothing more to do.
+           jmp idle
 
   ;;-----
   ;; BSS

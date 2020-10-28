@@ -14,12 +14,6 @@
 #include <kernel.h>
 #include <lifecycle.h>
 
-/* Reference from linker file */
-extern uint32_t physmemstart;
-
-/* Memory referenced from linker value */
-kheap_t served_address = (uint32_t)&physmemstart;
-
 void __attribute__ ((cold))
 install_system_memory(void)
 {

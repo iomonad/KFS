@@ -48,6 +48,5 @@ SECTIONS
      	 section_bss_end = .;
    }
 
-   /* Start of physical memory */
-   physmemstart = .; _physmemstart = .; __physmemstart = .;
+    kernel_memory_end = .;
 }

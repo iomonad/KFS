@@ -14,6 +14,7 @@
 #include <kernel.h>
 #include <keyboard.h>
 #include <lifecycle.h>
+#include <segmentation.h>
 
 /* Initialize video buffer */
 uint16_t *vga_buffer = (uint16_t*)VGA_ADDRESS;
@@ -47,9 +48,4 @@ void __kmain()
 {
 	/* Prepare kernel datastructures */
 	__kernel_init_hook();
-
-	for (;;) {
-		asm volatile ("nop");
-	}
-        return kshutdown();
 }
