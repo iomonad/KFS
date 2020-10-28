@@ -6,49 +6,46 @@ kmem_pos = 0xC0000000;
 
 SECTIONS
 {
-   . = 0x100000;
+   . = 0x00100000;
 
-   .multiboot ALIGN(4K) : {
-         *(.multiboot*)
+   .multiboot : {
+         *(.multiboot)
    }
 
-   .boottext ALIGN(4K) : {
-         *(.boottext*)
+   .boottext : {
+         *(.boottext)
    }
 
    . += kmem_pos;
-   kmem_start = .;
 
+   kernel_memory_start = .;
    /* TEXT */
    .text ALIGN(4K) : AT(ADDR(.text) - kmem_pos) {
-   	 kmem_text_start = .;
+   	 section_text_start = .;
 	 *(.text*)
-	 . = ALIGN(4K);
-	 kmem_text_end = .;
+   	 section_text_end = .;
    }
 
    /* RODATA */
    .rodata ALIGN(4K) : AT(ADDR(.rodata) - kmem_pos) {
-  	  kmem_rodata_start = .;
-	  *(.rodata*)
-	  . = ALIGN(4K);
-	  kmem_rodata_end = .;
+     	 section_rodata_start = .;
+	 *(.rodata*)
+     	 section_rodata_end = .;
    }
 
    /* DATA */
    .data ALIGN(4K) : AT(ADDR(.data) - kmem_pos) {
-   	 kmem_data_start = .;
+     	 section_data_start = .;
          *(.data*)
-	 . = ALIGN(4K);
-	kmem_data_end = .;
+     	 section_data_end = .;
    }
 
    /* BSS */
    .bss ALIGN(4K) : AT(ADDR(.bss) - kmem_pos) {
-   	kmem_bss_start = .;
+     	 section_bss_start = .;
+   	*(COMMON)
       	*(.bss)
-      	. = ALIGN(4K);
-      	kmem_bss_end = .;
+     	 section_bss_end = .;
    }
 
    /* Start of physical memory */
