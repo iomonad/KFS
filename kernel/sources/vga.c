@@ -9,6 +9,7 @@
 #include <vga.h>
 #include <stdlib.h>
 #include <kernel.h>
+#include <segmentation.h>
 
 extern uint16_t *vga_buffer;
 extern uint16_t vga_buffer_cursor;
@@ -178,4 +179,14 @@ void vga_puthex(uint32_t addr) {
 	else {
 		vga_putchar(tmp + '0');
 	}
+}
+
+/*
+ * Since we implemented memory in high/low memory
+ * scheme, we need to remap our VGA buffer
+ */
+
+void vga_remap_buffer(void)
+{
+	vga_buffer = (uint16_t*)(0xB8000 + KMEM_POS_OFFSET);
 }

@@ -56,4 +56,6 @@ void vga_puts(const char *buff);
 void vga_endl(void);
 void vga_puthex(uint32_t addr);
 
+void vga_remap_buffer(void);
+
 #endif	/* VGA_H */

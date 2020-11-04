@@ -39,4 +39,7 @@ extern void *kernel_memory_end;
 
 #define KERNEL_MEMORY_SIZE (uint32_t)(KMEM_POS_END - KMEM_POS_START)
 
+extern void *kmem_pos;
+#define KMEM_POS_OFFSET ((uint32_t)&kmem_pos)
+
 #endif

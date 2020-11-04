@@ -29,6 +29,7 @@ static void __attribute__ ((cold))
 __kernel_init_hook(void)
 {
 	/* Setup VGA */
+	vga_remap_buffer();
 	vga_clear_screen();
 
 	/* Install GDT */
