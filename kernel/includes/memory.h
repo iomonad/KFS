@@ -17,4 +17,8 @@ typedef uint32_t kheap_t;
 
 void __attribute__ ((cold)) install_system_memory(void);
 
+/* API */
+void *mmap(void *addr, size_t length, int prot,
+	   int flags, int fd, off_t offset);
+
 #endif	/* MEMORY_H */
