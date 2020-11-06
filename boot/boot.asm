@@ -47,6 +47,9 @@
         or esp, 0x80000001
         mov cr0, esp            ; Commit
 
+        ;;  assembly code executing at around 0x00100000
+        ;;  enable paging for both actual location of kernel
+        ;;  and its higher-half virtual location
         ;; Long jump into high mode
         lea ecx, [_kfs_entry_highmem]
         jmp ecx
@@ -57,7 +60,7 @@
   section .text
   extern __kmain                ; Symbol defined in sources
   _kfs_entry_highmem:
-        mov esp, _stack_top
+        mov esp, stack_top
         call __kmain
         cli
         idle:
@@ -77,11 +80,11 @@
   ;; Stack memory allocation
   ;;-------------------------
   section .bss
-  global _stack_bottom
-  global _stack_top
+  global stack_bottom
+  global stack_top
 
   align 4096
-  _stack_bottom:
-        resb 0x4000            ; Reserve 4kb Stack Memory
+  stack_bottom:
+        resb 0x4000            ; Reserve 16kb Stack Memory
         align 4096
-  _stack_top:
+  stack_top:

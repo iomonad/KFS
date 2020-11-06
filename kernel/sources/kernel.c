@@ -42,11 +42,11 @@ __kernel_init_hook(void)
 
 	/* Initialize memory pagging */
 	install_system_memory();
-	vga_puts("Memory Paging Installed!\n");
 }
 
 void __kmain()
 {
 	/* Prepare kernel datastructures */
 	__kernel_init_hook();
+	return ;
 }

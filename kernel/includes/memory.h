@@ -13,12 +13,14 @@
 
 typedef uint32_t kheap_t;
 
-/* PROTOTYPES */
+/* Assembly Ref */
+extern void *stack_bottom;
+extern void *stack_top;
 
+/* PROTOTYPES */
 void __attribute__ ((cold)) install_system_memory(void);
 
 /* API */
-void *mmap(void *addr, size_t length, int prot,
-	   int flags, int fd, off_t offset);
+void *kmalloc(size_t size);
 
 #endif	/* MEMORY_H */
