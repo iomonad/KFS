@@ -16,4 +16,15 @@ typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 typedef unsigned long uint64_t;
 
+/* Synthetic types
+ * used for Unix function definition
+ * compliance
+ */
+
+typedef unsigned short size_t;
+typedef signed short ssize_t;
+
+/* Naive OFF_T implementation */
+typedef long int off_t;
+
 #endif	/* TYPES_H */

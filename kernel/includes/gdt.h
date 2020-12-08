@@ -12,7 +12,7 @@
 #include <types.h>
 #include <kernel.h>
 
-#define GDT_SIZE 3
+#define GDT_SIZE 5
 
 /*
  * Modelize an GDT entry
@@ -44,7 +44,7 @@ extern void _gdt_commit(void);
 
 /* Prototypes */
 
-void install_system_gdt(void);;
+void install_system_gdt(void);
 void kgdt_add_entry(uint8_t index, uint64_t base, uint64_t limit,
 	            uint8_t access, uint8_t granularity);
 

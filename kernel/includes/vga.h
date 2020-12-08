@@ -50,8 +50,12 @@ void vga_swrite(const char *buff, uint32_t nbytes,
 		uint8_t fg, uint8_t bg);
 void vga_putcchar(const char c, uint8_t fg, uint8_t bg);
 void vga_putchar(const char c);
+void vga_putnbr(int n);
 void vga_delchar(void);
 void vga_puts(const char *buff);
 void vga_endl(void);
+void vga_puthex(uint32_t addr);
+
+void vga_remap_buffer(void);
 
 #endif	/* VGA_H */

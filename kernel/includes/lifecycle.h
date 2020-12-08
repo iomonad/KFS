@@ -10,5 +10,6 @@
 #define LIFECYCLE_H
 
 void __attribute__ ((cold)) kshutdown(void);
+void __attribute__ ((cold)) kpanic(const char *msg);
 
 #endif	/* LIFECYCLE_H */

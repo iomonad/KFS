@@ -6,6 +6,7 @@
  * See: https://github.com/iomonad/KFS
  *
  */
+#include <vga.h>
 #include <kernel.h>
 
 /*
@@ -38,5 +39,25 @@ void __attribute__ ((cold)) kshutdown(void)
 	        default:
 			asm volatile("ret");
 			break;
+	}
+}
+
+/*
+ * naive Kernel Panic implementation.
+ * Write message to VGA screen then dive
+ * in nop loop
+ */
+void __attribute__ ((cold)) kpanic(const char *msg)
+{
+	vga_puts("PANIC(");
+	vga_puts(msg);
+	vga_puts(") at ");
+	vga_puts(__FILE__);
+	vga_puts(":");
+	vga_putnbr(__LINE__);
+	vga_endl();
+
+	for (;;) {
+		asm volatile ("nop");
 	}
 }

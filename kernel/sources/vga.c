@@ -9,6 +9,7 @@
 #include <vga.h>
 #include <stdlib.h>
 #include <kernel.h>
+#include <segmentation.h>
 
 extern uint16_t *vga_buffer;
 extern uint16_t vga_buffer_cursor;
@@ -72,6 +73,22 @@ void vga_putchar(const char c) {
 	vga_putcchar(c, VGA_DEFAULT_FG, VGA_DEFAULT_BG);
 }
 
+/*
+ * Put interger value on vga
+ */
+void vga_putnbr(int n) {
+	if (n < 0) {
+		n = -n;
+	}
+	if (n >= 10) {
+		vga_putcchar(n / 10 + '0', VGA_DEFAULT_FG, VGA_DEFAULT_BG);
+		vga_putcchar(n % 10 + '0', VGA_DEFAULT_FG, VGA_DEFAULT_BG);
+	}
+	else {
+		vga_putcchar(n + '0', VGA_DEFAULT_FG, VGA_DEFAULT_BG);
+	}
+}
+
 
 /*
  * Delete char on vga
@@ -132,4 +149,44 @@ void vga_endl(void)
 	}
 	vga_buffer_cursor = 80 * vga_buffer_line_pos;
 	vga_buffer_line_pos += 1;
+}
+
+
+/* Put hex address on screen  */
+void vga_puthex(uint32_t addr) {
+	int tmp;
+	char q = 1;
+
+	vga_puts("0x");
+	for (int i = 28; i > 0; i -= 4) {
+		tmp = (addr >> i) & 0xF;
+		if (tmp == 0 && q != 0) {
+			continue;
+		}
+		if (tmp >= 0xA) {
+		        q = 0;
+			vga_putchar(tmp - 0xA + 'a');
+		}
+		else {
+			q = 0;
+			vga_putchar(tmp + '0');
+		}
+	}
+	tmp = addr & 0xF;
+	if (tmp >= 0xA) {
+		vga_putchar(tmp - 0xA + 'a');
+	}
+	else {
+		vga_putchar(tmp + '0');
+	}
+}
+
+/*
+ * Since we implemented memory in high/low memory
+ * scheme, we need to remap our VGA buffer
+ */
+
+void vga_remap_buffer(void)
+{
+	vga_buffer = (uint16_t*)(0xB8000 + KMEM_POS_OFFSET);
 }

@@ -6,40 +6,85 @@
 
   bits 32
 
-  ;; Multiboot spec implementation:
-  ;;-------------------------------
-  ;; See:
-  ;;  - https://wiki.osdev.org/Multiboot
-  ;;  - https://www.gnu.org/software/grub/manual/multiboot/multiboot.html#Header-magic-fields
-  ;;  - https://www.gnu.org/software/grub/manual/multiboot/html_node/boot_002eS.html#boot_002eS
-  section .text
-        align 4
-        dd 0x1BADB002           ; MAGIC
-        ;; When 0 in the ‘flags’ word is set, then all boot modules loaded along
-        ;; with the operating system must be aligned on page (4KB) boundaries.
-        ;; Some operating systems expect to be able to map the pages containing boot
-        ;; modules directly into a paged address space during startup, and thus need
-        ;; the boot modules to be page-aligned.
-        dd 0x00
-        ;; The field ‘checksum’ is a 32-bit unsigned value which, when added to
-        ;; the other magic fields (i.e. ‘magic’ and ‘flags’),
-        ;; must have a 32-bit unsigned sum of zero.
-        dd - (0x1BADB002 + 0x00)
+  %define KMEM_POS     0xC0000000
+  %define KMEM_POS_PHY 0x00000000
 
-  ;; Entrypoints
+  ;;-------------------
+  ;; Lowmem endpoint
+  ;; See: https://wiki.osdev.org/Higher_Half_x86_Bare_Bones
+  ;;-------------------
+  section .boottext
   global kfs_entry
-  extern __kmain                ; Symbol defined in sources
-
-  ;; Basic Lifecycle
-  ;; See:
-  ;;  - https://c9x.me/x86/html/file_module_x86_id_31.html
   kfs_entry:
-        cli                     ; Clear Interrupt Flag
-        mov esp, __stack
-        call __kmain
-        hlt                     ; Enter halt state
+        ;; Populate Page directory
+        mov ecx, 1024
+        mov esp, page_directory
+        sub esp, KMEM_POS       ; Remap
+        populate_pdir:
+                mov DWORD [esp], 0x0 ; Initialize at 0
+                add esp, 0x4
+        loop populate_pdir      ; Iterate n time ecx
 
-  ;; Stack memory allocation
+        mov esp, page_directory
+        sub esp, KMEM_POS
+
+        ;; The kernel is identity mapped because enabling paging does
+        ;; not change the next instruction, which continues to be physical.
+        ;; The CPU would instead page fault if there was no identity mapping.
+        mov DWORD [esp], KMEM_POS_PHY + 131
+        mov DWORD [esp + 4 * (KMEM_POS >> 22)], KMEM_POS_PHY + 131
+
+        ;; Enable paging
+        mov ecx, page_directory
+        sub ecx, KMEM_POS
+        mov cr3, ecx            ; Push page table addr
+
+        mov esp, cr4
+        or esp, 0x00000010      ; Enable PSE (4M Pages)
+        mov cr4, esp
+
+        mov esp, cr0
+        or esp, 0x80000001
+        mov cr0, esp            ; Commit
+
+        ;;  assembly code executing at around 0x00100000
+        ;;  enable paging for both actual location of kernel
+        ;;  and its higher-half virtual location
+        ;; Long jump into high mode
+        lea ecx, [_kfs_entry_highmem]
+        jmp ecx
+
+  ;;------------------
+  ;; Highmem endpoint
+  ;;------------------
+  section .text
+  extern __kmain                ; Symbol defined in sources
+  _kfs_entry_highmem:
+        mov esp, stack_top
+        call __kmain
+        cli
+        idle:
+           hlt                  ; Infinite loop if the system has nothing more to do.
+           jmp idle
+
+  ;;-----
+  ;; BSS
+  ;;-----
   section .bss
-        resb 0x1f400            ; Reserve 1G Stack Memory
-        __stack:
+  align 4096
+  global page_directory         ; Page Directory Defined
+  page_directory:
+        resb 4096
+
+  ;;-------------------------
+  ;; Stack memory allocation
+  ;;-------------------------
+  section .bss
+  global stack_bottom
+  global stack_top
+
+  align 4096
+  stack_bottom:
+        resb 0x4000            ; Reserve 16kb Stack Memory
+        align 4096
+  stack_top:

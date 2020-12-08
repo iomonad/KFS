@@ -10,9 +10,11 @@
 #include <gdt.h>
 #include <vga.h>
 #include <time.h>
+#include <memory.h>
 #include <kernel.h>
 #include <keyboard.h>
 #include <lifecycle.h>
+#include <segmentation.h>
 
 /* Initialize video buffer */
 uint16_t *vga_buffer = (uint16_t*)VGA_ADDRESS;
@@ -27,6 +29,7 @@ static void __attribute__ ((cold))
 __kernel_init_hook(void)
 {
 	/* Setup VGA */
+	vga_remap_buffer();
 	vga_clear_screen();
 
 	/* Install GDT */
@@ -36,16 +39,14 @@ __kernel_init_hook(void)
 	/* Install IDT */
 	install_system_idt();
 	vga_puts("IDT Installed!\n");
+
+	/* Initialize memory pagging */
+	install_system_memory();
 }
 
 void __kmain()
 {
 	/* Prepare kernel datastructures */
 	__kernel_init_hook();
-
-	asm volatile ("int $0x1");
-	for (;;) {
-		asm volatile ("nop");
-	}
-	return kshutdown();
+	return ;
 }

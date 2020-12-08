@@ -45,7 +45,7 @@ void install_system_gdt(void)
 	_gdtptr.base = (uint32_t)&gdt;
 
 	/* Stick to standard guideline */
-	kgdt_add_entry(0x00, 0, 0, 0, 0);
+	kgdt_add_entry(0, 0, 0, 0, 0);
 
 	/*
 	 * Code Segment:
@@ -57,7 +57,7 @@ void install_system_gdt(void)
 	 *   ->  Access: 0x9A (for code)
 	 *   ->  Granularity: 4kb
 	 */
-	kgdt_add_entry(0x01, 0, 0xFFFFFFFF, 0x9A, 0xCF);
+	kgdt_add_entry(1, 0, 0xFFFFFFFF, 0x9A, 0xCF);
 
 	/*
 	 * Data Segment:
@@ -68,7 +68,9 @@ void install_system_gdt(void)
 	 *   ->  Access: 0x92 (for data)
 	 *   ->  Granularity: 4kb
 	 */
-	kgdt_add_entry(0x02, 0, 0xFFFFFFFF, 0x92, 0xCF);
+	kgdt_add_entry(2, 0, 0xFFFFFFFF, 0x92, 0xCF);
 
+	kgdt_add_entry(3, 0, 0xFFFFFFFF, 0xFA, 0xCF); /* User mode code segment */
+	kgdt_add_entry(4, 0, 0xFFFFFFFF, 0xF2, 0xCF); /* User mode data segment */
 	_gdt_commit();
 }

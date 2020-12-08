@@ -9,10 +9,18 @@
 #include <vga.h>
 #include <irq.h>
 #include <types.h>
+#include <stdlib.h>
 #include <kernel.h>
 
-interrupt_entry_t idt_entries[256];
+interrupt_entry_t idt_entries[IDT_SIZE];
+irqcb_t interrupt_callbacks[IDT_SIZE];
 idt_ptr_t idt_ptr;
+
+/* Register Callback */
+void register_interrupt_callback(uint8_t n, irqcb_t callback)
+{
+	interrupt_callbacks[n] = callback;
+}
 
 /*
  * Interrupt handler called
@@ -20,8 +28,20 @@ idt_ptr_t idt_ptr;
  */
 void interrupt_handler(registers_t reg)
 {
-	vga_puts("Kernel got interrupt!\n");
-	vga_putchar((char)reg.int_number);
+	/*
+	 * TODO:
+	 *  - Handle EOI (end of interrupt) signal to the PICs.
+	 *  - Send reset signal to master
+	 */
+
+	if (interrupt_callbacks[reg.int_number] != 0) {
+		irqcb_t handler = interrupt_callbacks[reg.int_number];
+		handler(reg);
+	} else {
+		vga_puts("Warning! No handler for interrupt: ");
+		vga_putnbr(reg.int_number);
+		vga_endl();
+	}
 }
 
 void idt_add_entry(uint8_t index, uint32_t base,
@@ -44,12 +64,29 @@ void idt_add_entry(uint8_t index, uint32_t base,
 void __attribute__ ((cold))
 install_system_idt(void)
 {
-	idt_ptr.limit = sizeof(interrupt_entry_t) * 256 - 1;
+	idt_ptr.limit = sizeof(interrupt_entry_t) * IDT_SIZE - 1;
 	idt_ptr.base = (uint32_t)&idt_entries;
 
-	idt_add_entry(0, (uint32_t)irq0 , 0x08, 0x8E);
-	idt_add_entry(1, (uint32_t)irq1 , 0x08, 0x8E);
-	idt_add_entry(2, (uint32_t)irq2 , 0x08, 0x8E);
+	memset((void*)&idt_entries, 0, sizeof(interrupt_entry_t) * IDT_SIZE);
+
+	/* Populate Gates */
+	idt_add_entry(0, (uint32_t)irq0, 0x08, 0x8E);
+	idt_add_entry(1, (uint32_t)irq1, 0x08, 0x8E);
+	idt_add_entry(2, (uint32_t)irq2, 0x08, 0x8E);
+	idt_add_entry(3, (uint32_t)irq3, 0x08, 0x8E);
+	idt_add_entry(4, (uint32_t)irq4, 0x08, 0x8E);
+	idt_add_entry(5, (uint32_t)irq5, 0x08, 0x8E);
+	idt_add_entry(6, (uint32_t)irq6, 0x08, 0x8E);
+	idt_add_entry(7, (uint32_t)irq7, 0x08, 0x8E);
+	idt_add_entry(8, (uint32_t)irq8, 0x08, 0x8E);
+	idt_add_entry(9, (uint32_t)irq9, 0x08, 0x8E);
+	idt_add_entry(10, (uint32_t)irq10, 0x08, 0x8E);
+	idt_add_entry(11, (uint32_t)irq11, 0x08, 0x8E);
+	idt_add_entry(12, (uint32_t)irq12, 0x08, 0x8E);
+	idt_add_entry(13, (uint32_t)irq13, 0x08, 0x8E);
+	idt_add_entry(14, (uint32_t)irq14, 0x08, 0x8E);
+	idt_add_entry(15, (uint32_t)irq15, 0x08, 0x8E);
+	idt_add_entry(16, (uint32_t)irq16, 0x08, 0x8E);
 
 	_idt_commit((uint32_t)&idt_ptr);
 }

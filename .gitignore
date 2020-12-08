@@ -3,3 +3,6 @@
 *.rom
 *.iso
 *.o
+*.sym
+*.dump
+isodir/

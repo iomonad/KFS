@@ -8,7 +8,7 @@ CFLAGS = -m32 -std=gnu99 \
 	 -fno-stack-protector \
 	 -nostdlib -nodefaultlibs \
 	 -Wshadow -Wunreachable-code -Wswitch-enum \
-         -Wstrict-prototypes -Werror \
+         -Wstrict-prototypes -Werror -g \
 	 -O2 -Wall -Wextra -c $(LIBS_FLAGS)
 
 LIBS_FLAGS = -I$(KERNEL_INC_DIR)
@@ -19,6 +19,7 @@ KERNEL_SRC_FILES = kernel.c \
 		   time.c \
 		   lifecycle.c \
 		   gdt.c \
-		   irq.c
+		   irq.c \
+		   memory.c
 KERNEL_SOURCES = $(addprefix $(KERNEL_SRC_DIR), $(KERNEL_SRC_FILES))
 KERNEL_TARGETS = $(KERNEL_SOURCES:.c=.o)
